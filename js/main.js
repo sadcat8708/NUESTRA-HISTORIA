@@ -3,12 +3,13 @@ const IMAGE_DURATION = 7000;
 const CHAPTER_DURATION = 3000;
 const VIDEO_VOLUME = 0.25;
 
-// Elementos principales
+// Pantallas
 const coverScreen = document.getElementById("cover");
 const chapterScreen = document.getElementById("chapterScreen");
 const galleryScreen = document.getElementById("galleryScreen");
 const endingScreen = document.getElementById("endingScreen");
 
+// Elementos
 const startButton = document.getElementById("startButton");
 const mediaContainer = document.getElementById("mediaContainer");
 const chapterNumber = document.getElementById("chapterNumber");
@@ -27,8 +28,10 @@ let timer = null;
 let currentVideo = null;
 let isPaused = false;
 
-// Mostrar pantalla
+/* Cambiar de pantalla */
+
 function showScreen(screen) {
+
     [
         coverScreen,
         chapterScreen,
@@ -39,17 +42,22 @@ function showScreen(screen) {
     screen.classList.add("active");
 }
 
-// Actualizar icono de pausa
+/* Icono de pausa */
+
 function updatePauseIcon() {
+
     pauseButton.textContent = isPaused ? "▶" : "⏸";
+
     pauseButton.setAttribute(
         "aria-label",
         isPaused ? "Continuar" : "Pausar"
     );
 }
 
-// Precargar siguiente fotografía
+/* Precargar siguiente fotografía */
+
 function preloadNextImage() {
+
     const nextIndex = currentIndex + 1;
 
     if (nextIndex >= presentation.length) return;
@@ -57,28 +65,37 @@ function preloadNextImage() {
     const nextItem = presentation[nextIndex];
 
     if (nextItem.type === "image") {
+
         const preload = new Image();
         preload.src = nextItem.src;
+
     }
 }
 
-// Mostrar elemento actual
+/* Mostrar elemento actual */
+
 function showCurrentItem() {
+
     clearTimeout(timer);
 
     if (currentVideo) {
+
         currentVideo.pause();
         currentVideo.removeAttribute("src");
         currentVideo.load();
+
         currentVideo = null;
     }
 
     if (currentIndex >= presentation.length) {
+
         showEnding();
         return;
+
     }
 
     isPaused = false;
+
     updatePauseIcon();
     updateProgress();
 
@@ -89,34 +106,46 @@ function showCurrentItem() {
         currentIndex === 0 ||
         item.chapterNumber !== previousItem.chapterNumber
     ) {
+
         showChapter(item);
+
     } else {
+
         renderMedia(item);
+
     }
 }
 
-// Mostrar capítulo
+/* Mostrar capítulo */
+
 function showChapter(item) {
+
     chapterNumber.textContent = item.chapterNumber;
     chapterText.textContent = item.chapterText;
 
     showScreen(chapterScreen);
 
     timer = setTimeout(() => {
+
         if (!isPaused) {
             renderMedia(presentation[currentIndex]);
         }
+
     }, CHAPTER_DURATION);
 }
 
-// Mostrar fotografía o vídeo
+/* Mostrar fotografía o vídeo */
+
 function renderMedia(item) {
+
     clearTimeout(timer);
 
     mediaContainer.innerHTML = "";
+
     showScreen(galleryScreen);
 
     if (item.type === "image") {
+
         const image = document.createElement("img");
 
         image.src = item.src;
@@ -124,14 +153,19 @@ function renderMedia(item) {
         image.decoding = "async";
 
         image.onload = () => {
+
             if (!isPaused) {
                 timer = setTimeout(nextItem, IMAGE_DURATION);
             }
+
         };
 
         image.onerror = () => {
+
             console.error("No se pudo cargar:", item.src);
+
             nextItem();
+
         };
 
         mediaContainer.appendChild(image);
@@ -139,6 +173,7 @@ function renderMedia(item) {
         preloadNextImage();
 
     } else if (item.type === "video") {
+
         const video = document.createElement("video");
 
         video.src = item.src;
@@ -151,8 +186,11 @@ function renderMedia(item) {
         video.addEventListener("ended", nextItem);
 
         video.addEventListener("error", () => {
+
             console.error("No se pudo reproducir:", item.src);
+
             nextItem();
+
         });
 
         mediaContainer.appendChild(video);
@@ -160,92 +198,150 @@ function renderMedia(item) {
         currentVideo = video;
 
         video.play().catch(error => {
-            console.warn("Reproducción automática bloqueada:", error);
+
+            console.warn(
+                "Reproducción automática bloqueada:",
+                error
+            );
+
         });
+
     }
 }
 
-// Siguiente elemento
+/* Siguiente elemento */
+
 function nextItem() {
+
     if (currentIndex < presentation.length) {
+
         currentIndex++;
+
         showCurrentItem();
+
     }
 }
 
-// Elemento anterior
+/* Elemento anterior */
+
 function previousItem() {
+
     if (currentIndex > 0) {
+
         currentIndex--;
+
         showCurrentItem();
+
     }
 }
 
-// Pausar y continuar
+/* Pausar y continuar */
+
 function togglePause() {
+
     isPaused = !isPaused;
 
     if (currentVideo) {
+
         if (isPaused) {
+
             currentVideo.pause();
+
         } else {
+
             currentVideo.play().catch(() => {});
+
         }
+
     } else if (isPaused) {
+
         clearTimeout(timer);
+
     } else {
+
         const currentItem = presentation[currentIndex];
 
         if (chapterScreen.classList.contains("active")) {
+
             timer = setTimeout(() => {
+
                 renderMedia(currentItem);
+
             }, CHAPTER_DURATION);
+
         } else if (currentItem?.type === "image") {
+
             timer = setTimeout(nextItem, IMAGE_DURATION);
+
         }
+
     }
 
     updatePauseIcon();
 }
 
-// Barra de progreso
+/* Barra de progreso */
+
 function updateProgress() {
-    const progress = (currentIndex / presentation.length) * 100;
+
+    const progress =
+        (currentIndex / presentation.length) * 100;
+
     progressBar.style.width = `${progress}%`;
 }
 
-// Pantalla final
+/* Pantalla final */
+
 function showEnding() {
+
     clearTimeout(timer);
+
     mediaContainer.innerHTML = "";
+
     progressBar.style.width = "100%";
 
     if (currentVideo) {
+
         currentVideo.pause();
+
         currentVideo = null;
+
     }
 
     showScreen(endingScreen);
 }
 
-// Reiniciar presentación
+/* Reiniciar presentación */
+
 function restartJourney() {
+
     currentIndex = 0;
+
     showCurrentItem();
 }
 
-// Eventos de botones
+/* Botón comenzar */
+
 startButton.addEventListener("click", () => {
+
     currentIndex = 0;
+
     showCurrentItem();
+
 });
 
+/* Controles */
+
 nextButton.addEventListener("click", nextItem);
+
 previousButton.addEventListener("click", previousItem);
+
 pauseButton.addEventListener("click", togglePause);
 
-// Controles del teclado
+/* Teclado */
+
 document.addEventListener("keydown", event => {
+
     if (event.key === "ArrowRight") {
         nextItem();
     }
@@ -255,10 +351,15 @@ document.addEventListener("keydown", event => {
     }
 
     if (event.code === "Space") {
+
         event.preventDefault();
+
         togglePause();
+
     }
+
 });
 
-// Icono inicial
+/* Icono inicial */
+
 updatePauseIcon();

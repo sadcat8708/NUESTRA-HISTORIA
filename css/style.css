@@ -15,14 +15,15 @@
     box-sizing: border-box;
 }
 
-html, body {
+html,
+body {
     width: 100%;
     height: 100%;
 }
 
 body {
     overflow: hidden;
-    background: var(--background);
+    background: #000;
     color: var(--white);
     font-family: 'Montserrat', sans-serif;
 }
@@ -33,20 +34,28 @@ body {
     position: relative;
 }
 
-/* PANTALLAS */
+/* =====================================
+   PANTALLAS
+===================================== */
 
 .screen {
     position: absolute;
     inset: 0;
+
     display: flex;
     justify-content: center;
     align-items: center;
+
     overflow: hidden;
     background: var(--background);
+
     opacity: 0;
     visibility: hidden;
     z-index: 0;
-    transition: opacity 0.55s ease, visibility 0.55s ease;
+
+    transition:
+        opacity 0.55s ease,
+        visibility 0.55s ease;
 }
 
 .screen.active {
@@ -55,9 +64,12 @@ body {
     z-index: 2;
 }
 
-/* PORTADA */
+/* =====================================
+   PORTADA
+===================================== */
 
 #cover {
+    background: #000;
     text-align: center;
     isolation: isolate;
 }
@@ -66,28 +78,252 @@ body {
     position: absolute;
     inset: 0;
     z-index: -2;
-    background:
-        radial-gradient(
-            ellipse at 50% 45%,
-            rgba(154, 112, 54, 0.20),
-            transparent 50%
-        ),
-        linear-gradient(135deg, #17140f, #090908 55%, #030303);
+    background: #000;
 }
+
+/* =====================================
+   VELA
+===================================== */
+
+.cover-candle-layer {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+/* Resplandor reducido para no afectar el texto */
+
+
+.candle-glow {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+
+    width: min(950px, 100vw);
+    aspect-ratio: 1;
+
+    border-radius: 50%;
+
+    background: radial-gradient(
+        circle,
+        rgba(255, 190, 85, 0.34) 0%,
+        rgba(255, 150, 55, 0.22) 25%,
+        rgba(255, 125, 35, 0.12) 45%,
+        rgba(197, 164, 109, 0.05) 65%,
+        transparent 80%
+    );
+
+    opacity: 0;
+
+    transform: translate(-50%, -50%) scale(0.1);
+
+    animation: candleGlow 3.5s ease-out 2.8s forwards;
+}
+
+
+/* Escena de la vela */
+
+.candle-scene {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+
+    width: 160px;
+    height: 260px;
+
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+
+    opacity: 0;
+
+    transform: translate(-50%, -50%);
+
+    animation: candleAppear 1.2s ease 1s forwards;
+}
+
+/* Cuerpo de la vela */
+
+.candle-body {
+    position: relative;
+
+    width: 62px;
+    height: 145px;
+
+    border-radius: 9px 9px 5px 5px;
+
+    background: linear-gradient(
+        90deg,
+        #8f7656,
+        #f0dfbd 35%,
+        #e6d1a9 65%,
+        #927651
+    );
+
+    box-shadow:
+        0 0 25px rgba(225, 169, 91, 0.12),
+        inset -7px 0 12px rgba(60, 37, 14, 0.16);
+
+    overflow: hidden;
+}
+
+/* Cera superior */
+
+.candle-wax {
+    position: absolute;
+    top: -4px;
+    left: 0;
+
+    width: 100%;
+    height: 15px;
+
+    border-radius: 50%;
+    background: #f1dfbd;
+}
+
+/* Brillo lateral */
+
+.candle-highlight {
+    position: absolute;
+    top: 15px;
+    left: 10px;
+
+    width: 5px;
+    height: 105px;
+
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.18);
+}
+
+/* Mecha */
+
+.candle-wick {
+    position: absolute;
+    z-index: 3;
+
+    bottom: 144px;
+
+    width: 4px;
+    height: 17px;
+
+    border-radius: 3px;
+    background: #302015;
+}
+
+/* Chispa */
+
+.candle-spark {
+    position: absolute;
+    z-index: 5;
+
+    bottom: 158px;
+
+    width: 9px;
+    height: 9px;
+
+    border-radius: 50%;
+
+    background: #fff6c9;
+
+    box-shadow:
+        0 0 8px 3px rgba(255, 194, 90, 0.9),
+        0 0 20px 8px rgba(255, 139, 35, 0.55);
+
+    opacity: 0;
+    transform: scale(0);
+
+    animation: sparkIgnite 0.75s ease-out 2.1s forwards;
+}
+
+/* Llama */
+
+.candle-flame {
+    position: absolute;
+    z-index: 4;
+
+    bottom: 158px;
+
+    width: 23px;
+    height: 43px;
+
+    border-radius: 55% 45% 50% 50%;
+
+    background: linear-gradient(
+        to top,
+        #ff7b16 0%,
+        #ffb52e 48%,
+        #fff0b0 100%
+    );
+
+    transform-origin: center bottom;
+
+    opacity: 0;
+
+    filter: drop-shadow(0 0 8px #ff9d32);
+
+    animation:
+        flameIgnite 1.1s ease-out 2.6s forwards,
+        flameFlicker 2s ease-in-out 3.7s infinite;
+}
+
+/* Interior de la llama */
+
+.flame-inner {
+    position: absolute;
+    bottom: 0;
+    left: 7px;
+
+    width: 9px;
+    height: 24px;
+
+    border-radius: 50%;
+
+    background: #fff4c5;
+    filter: blur(1px);
+}
+
+/* Sombra */
+
+.candle-shadow {
+    position: absolute;
+    bottom: -15px;
+
+    width: 150px;
+    height: 20px;
+
+    border-radius: 50%;
+
+    background: rgba(0, 0, 0, 0.8);
+    filter: blur(10px);
+}
+
+/* =====================================
+   MARCO DE LA PORTADA
+===================================== */
 
 .cover-overlay {
     position: absolute;
     inset: 30px;
+    z-index: 2;
+
     border: 1px solid rgba(197, 164, 109, 0.22);
+
     pointer-events: none;
+    opacity: 0;
+
+    animation: coverReveal 1.2s ease 5.3s forwards;
 }
 
 .cover-overlay::before,
 .cover-overlay::after {
     content: "";
+
     position: absolute;
     width: 65px;
     height: 65px;
+
     border-color: var(--gold);
     border-style: solid;
     opacity: 0.65;
@@ -105,12 +341,24 @@ body {
     border-width: 0 1px 1px 0;
 }
 
+/* =====================================
+   TEXTO DE LA PORTADA
+===================================== */
+
 .cover-content {
     position: relative;
-    z-index: 2;
+    z-index: 5;
+
     width: min(900px, 90%);
     padding: 30px;
-    animation: appear 0.9s ease both;
+
+    opacity: 0;
+
+    text-shadow:
+        0 2px 8px rgba(0, 0, 0, 0.95),
+        0 0 18px rgba(0, 0, 0, 0.85);
+
+    animation: coverReveal 1.2s ease 5.3s forwards;
 }
 
 .eyebrow {
@@ -129,10 +377,14 @@ body {
 
 h1 {
     font-family: 'Cormorant Garamond', serif;
+
     font-size: clamp(70px, 12vw, 155px);
     font-weight: 300;
+
     line-height: 0.9;
     letter-spacing: -4px;
+
+    color: #fff;
 }
 
 h1 span,
@@ -143,15 +395,19 @@ h1 span,
 
 .subtitle {
     margin-top: 30px;
+
     font-size: 12px;
     letter-spacing: 9px;
-    color: #b9ad98;
+
+    color: #e4d8c3;
     text-transform: uppercase;
 }
 
 .intro {
     margin-top: 55px;
-    color: #c1b9ac;
+
+    color: #eee8dd;
+
     font-size: 13px;
     letter-spacing: 1.5px;
     font-weight: 300;
@@ -160,15 +416,23 @@ h1 span,
 .start-button {
     margin-top: 45px;
     padding: 18px 34px;
+
     border: 1px solid rgba(197, 164, 109, 0.8);
-    background: rgba(197, 164, 109, 0.04);
+
+    background: rgba(0, 0, 0, 0.65);
+
     color: var(--gold-light);
+
     font-family: 'Montserrat', sans-serif;
     font-size: 10px;
     letter-spacing: 3px;
     text-transform: uppercase;
+
     cursor: pointer;
-    transition: background 0.25s ease, color 0.25s ease;
+
+    transition:
+        background 0.25s ease,
+        color 0.25s ease;
 }
 
 .start-button span {
@@ -183,18 +447,30 @@ h1 span,
 
 .footer-cover {
     margin-top: 75px;
+
     font-size: 9px;
     letter-spacing: 5px;
-    color: #777064;
+
+    color: #d1c5b0;
 }
+
+/* Decoración */
 
 .cover-decoration {
     position: absolute;
+    z-index: 1;
+
     width: 420px;
     height: 420px;
+
     border: 1px solid rgba(197, 164, 109, 0.07);
     border-radius: 50%;
+
     pointer-events: none;
+
+    opacity: 0;
+
+    animation: coverReveal 1.2s ease 5.3s forwards;
 }
 
 .decoration-one {
@@ -207,7 +483,9 @@ h1 span,
     right: -180px;
 }
 
-/* CAPÍTULOS */
+/* =====================================
+   CAPÍTULOS
+===================================== */
 
 #chapterScreen {
     background:
@@ -221,8 +499,10 @@ h1 span,
 
 .chapter-content {
     text-align: center;
+
     width: min(1000px, 90%);
     padding: 30px;
+
     animation: chapterAppear 0.8s ease both;
 }
 
@@ -234,13 +514,17 @@ h1 span,
 
 .chapter-content h2 {
     font-family: 'Cormorant Garamond', serif;
+
     font-size: clamp(45px, 7vw, 95px);
     font-weight: 300;
+
     color: var(--white);
     line-height: 1.1;
 }
 
-/* GALERÍA */
+/* =====================================
+   GALERÍA
+===================================== */
 
 #galleryScreen {
     background: #030303;
@@ -249,18 +533,23 @@ h1 span,
 .media-container {
     position: absolute;
     inset: 0;
+
     display: flex;
     justify-content: center;
     align-items: center;
+
     padding: 25px 25px 95px;
+
     background: #030303;
 }
 
 .media-container img,
 .media-container video {
     display: block;
+
     width: 100%;
     height: 100%;
+
     object-fit: contain;
 }
 
@@ -270,36 +559,50 @@ h1 span,
 
 .media-placeholder {
     color: var(--muted);
+
     font-family: 'Cormorant Garamond', serif;
     font-size: 35px;
+
     text-align: center;
 }
 
-/* CONTROLES */
+/* =====================================
+   CONTROLES
+===================================== */
 
 .gallery-controls {
     position: absolute;
     bottom: 35px;
     z-index: 5;
+
     display: flex;
     align-items: center;
     gap: 18px;
+
     padding: 9px 18px;
+
     border: 1px solid rgba(197, 164, 109, 0.17);
     border-radius: 50px;
+
     background: rgba(8, 8, 7, 0.92);
 }
 
 .gallery-controls button {
     width: 42px;
     height: 42px;
+
     border: 1px solid rgba(197, 164, 109, 0.35);
     border-radius: 50%;
+
     background: transparent;
     color: var(--gold-light);
+
     font-size: 16px;
     cursor: pointer;
-    transition: background 0.2s ease, color 0.2s ease;
+
+    transition:
+        background 0.2s ease,
+        color 0.2s ease;
 }
 
 .gallery-controls button:hover {
@@ -307,14 +610,18 @@ h1 span,
     color: #090909;
 }
 
-/* PROGRESO */
+/* =====================================
+   PROGRESO
+===================================== */
 
 .gallery-progress {
     position: absolute;
     bottom: 0;
     left: 0;
+
     width: 100%;
     height: 3px;
+
     background: rgba(255, 255, 255, 0.08);
     z-index: 6;
 }
@@ -322,11 +629,14 @@ h1 span,
 #progressBar {
     height: 100%;
     width: 0%;
+
     background: var(--gold);
     transition: width 0.35s ease;
 }
 
-/* CIERRE */
+/* =====================================
+   CIERRE
+===================================== */
 
 #endingScreen {
     background:
@@ -341,20 +651,26 @@ h1 span,
 .ending-content {
     max-width: 950px;
     padding: 30px;
+
     text-align: center;
+
     animation: appear 0.9s ease both;
 }
 
 .ending-content h2 {
     font-family: 'Cormorant Garamond', serif;
+
     font-size: clamp(50px, 8vw, 105px);
     font-weight: 300;
+
     line-height: 1.05;
 }
 
 .ending-content > p:not(.eyebrow):not(.ending-signature) {
     margin-top: 40px;
+
     color: var(--muted);
+
     font-size: 13px;
     letter-spacing: 1.5px;
     line-height: 2;
@@ -362,18 +678,114 @@ h1 span,
 
 .ending-signature {
     margin-top: 65px;
+
     color: var(--gold);
     font-size: 10px;
     letter-spacing: 7px;
 }
 
-/* ANIMACIONES LIGERAS */
+/* =====================================
+   ANIMACIONES
+===================================== */
 
-@keyframes appear {
+@keyframes candleAppear {
     from {
         opacity: 0;
-        transform: translateY(15px);
+        transform: translate(-50%, -45%);
     }
+
+    to {
+        opacity: 0.85;
+        transform: translate(-50%, -50%);
+    }
+}
+
+@keyframes sparkIgnite {
+    0% {
+        opacity: 0;
+        transform: scale(0);
+    }
+
+    25% {
+        opacity: 1;
+        transform: scale(1.5);
+    }
+
+    65% {
+        opacity: 1;
+        transform: scale(0.8);
+    }
+
+    100% {
+        opacity: 0;
+        transform: scale(0);
+    }
+}
+
+@keyframes flameIgnite {
+    0% {
+        opacity: 0;
+        transform: scale(0.1) rotate(-12deg);
+    }
+
+    45% {
+        opacity: 1;
+        transform: scale(1.25) rotate(8deg);
+    }
+
+    70% {
+        transform: scale(0.9) rotate(-5deg);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes flameFlicker {
+    0%, 100% {
+        transform: rotate(-3deg) scale(1);
+    }
+
+    25% {
+        transform: rotate(2deg) scale(1.04, 0.97);
+    }
+
+    50% {
+        transform: rotate(3deg) scale(1.06, 0.96);
+    }
+
+    75% {
+        transform: rotate(-2deg) scale(0.97, 1.04);
+    }
+}
+
+
+@keyframes candleGlow {
+    0% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.1);
+    }
+
+    45% {
+        opacity: 0.65;
+        transform: translate(-50%, -50%) scale(0.75);
+    }
+
+    100% {
+        opacity: 0.85;
+        transform: translate(-50%, -50%) scale(1);
+    }
+}
+
+
+@keyframes coverReveal {
+    from {
+        opacity: 0;
+        transform: translateY(22px);
+    }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -385,6 +797,7 @@ h1 span,
         opacity: 0;
         transform: scale(0.98);
     }
+
     to {
         opacity: 1;
         transform: scale(1);
@@ -395,19 +808,36 @@ h1 span,
     from {
         opacity: 0;
     }
+
     to {
         opacity: 1;
     }
 }
 
-/* RESPONSIVE */
+@keyframes appear {
+    from {
+        opacity: 0;
+        transform: translateY(15px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* =====================================
+   RESPONSIVE
+===================================== */
 
 @media (max-width: 600px) {
+
     .cover-overlay {
         inset: 12px;
     }
 
     .cover-content {
+        width: 96%;
         padding: 15px;
     }
 
@@ -453,15 +883,43 @@ h1 span,
         width: 38px;
         height: 38px;
     }
+
+    .candle-scene {
+        top: 55%;
+        transform: translate(-50%, -50%) scale(0.85);
+    }
+
+    .candle-glow {
+        width: 100vw;
+    }
 }
 
-/* REDUCIR MOVIMIENTO SI EL SISTEMA LO SOLICITA */
+/* Accesibilidad */
 
 @media (prefers-reduced-motion: reduce) {
+
     *,
     *::before,
     *::after {
         animation: none !important;
         transition: none !important;
+    }
+
+    .candle-scene {
+        opacity: 0.85;
+    }
+
+    .candle-flame {
+        opacity: 1;
+    }
+
+    .candle-glow {
+        opacity: 0.3;
+    }
+
+    .cover-content,
+    .cover-overlay,
+    .cover-decoration {
+        opacity: 1;
     }
 }
