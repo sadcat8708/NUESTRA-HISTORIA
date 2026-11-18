@@ -1,173 +1,264 @@
 
-const cover = document.getElementById("cover");
+const IMAGE_DURATION = 7000;
+const CHAPTER_DURATION = 3000;
+const VIDEO_VOLUME = 0.25;
+
+// Elementos principales
+const coverScreen = document.getElementById("cover");
 const chapterScreen = document.getElementById("chapterScreen");
 const galleryScreen = document.getElementById("galleryScreen");
 const endingScreen = document.getElementById("endingScreen");
 
 const startButton = document.getElementById("startButton");
+const mediaContainer = document.getElementById("mediaContainer");
 const chapterNumber = document.getElementById("chapterNumber");
 const chapterText = document.getElementById("chapterText");
 
-const mediaContainer = document.getElementById("mediaContainer");
-const nextButton = document.getElementById("nextButton");
 const previousButton = document.getElementById("previousButton");
+const nextButton = document.getElementById("nextButton");
 const pauseButton = document.getElementById("pauseButton");
 const progressBar = document.getElementById("progressBar");
 
-let currentItem = 0;
-let currentChapter = 0;
+// Presentación
+const presentation = buildPresentation();
+
+let currentIndex = 0;
+let timer = null;
+let currentVideo = null;
 let isPaused = false;
-let slideTimer = null;
 
-const IMAGE_DURATION = 7000;
-
+// Mostrar pantalla
 function showScreen(screen) {
-    [cover, chapterScreen, galleryScreen, endingScreen]
-        .forEach(item => item.classList.remove("active"));
+    [
+        coverScreen,
+        chapterScreen,
+        galleryScreen,
+        endingScreen
+    ].forEach(item => item.classList.remove("active"));
 
     screen.classList.add("active");
 }
 
-function startJourney() {
-    currentChapter = 0;
-    showChapter();
+// Actualizar icono de pausa
+function updatePauseIcon() {
+    pauseButton.textContent = isPaused ? "▶" : "⏸";
+    pauseButton.setAttribute(
+        "aria-label",
+        isPaused ? "Continuar" : "Pausar"
+    );
 }
 
-function showChapter() {
-    if (currentChapter >= chapters.length) {
+// Precargar siguiente fotografía
+function preloadNextImage() {
+    const nextIndex = currentIndex + 1;
+
+    if (nextIndex >= presentation.length) return;
+
+    const nextItem = presentation[nextIndex];
+
+    if (nextItem.type === "image") {
+        const preload = new Image();
+        preload.src = nextItem.src;
+    }
+}
+
+// Mostrar elemento actual
+function showCurrentItem() {
+    clearTimeout(timer);
+
+    if (currentVideo) {
+        currentVideo.pause();
+        currentVideo.removeAttribute("src");
+        currentVideo.load();
+        currentVideo = null;
+    }
+
+    if (currentIndex >= presentation.length) {
         showEnding();
         return;
     }
 
-    const chapter = chapters[currentChapter];
+    isPaused = false;
+    updatePauseIcon();
+    updateProgress();
 
-    chapterNumber.textContent = chapter.number;
-    chapterText.textContent = chapter.text;
+    const item = presentation[currentIndex];
+    const previousItem = presentation[currentIndex - 1];
+
+    if (
+        currentIndex === 0 ||
+        item.chapterNumber !== previousItem.chapterNumber
+    ) {
+        showChapter(item);
+    } else {
+        renderMedia(item);
+    }
+}
+
+// Mostrar capítulo
+function showChapter(item) {
+    chapterNumber.textContent = item.chapterNumber;
+    chapterText.textContent = item.chapterText;
 
     showScreen(chapterScreen);
 
-    setTimeout(() => {
-        if (chapterScreen.classList.contains("active")) {
-            currentItem = getChapterStart(currentChapter);
-            showGalleryItem();
+    timer = setTimeout(() => {
+        if (!isPaused) {
+            renderMedia(presentation[currentIndex]);
         }
-    }, 3500);
+    }, CHAPTER_DURATION);
 }
 
-function getChapterStart(chapterIndex) {
-    if (galleryItems.length === 0) return 0;
+// Mostrar fotografía o vídeo
+function renderMedia(item) {
+    clearTimeout(timer);
 
-    const itemsPerChapter = Math.ceil(
-        galleryItems.length / chapters.length
-    );
-
-    return Math.min(
-        chapterIndex * itemsPerChapter,
-        galleryItems.length - 1
-    );
-}
-
-function showGalleryItem() {
-    clearTimeout(slideTimer);
-
-    if (galleryItems.length === 0) {
-        showScreen(galleryScreen);
-        mediaContainer.innerHTML = `
-            <div class="media-placeholder">
-                <p>Agrega tus fotografías y videos en gallery.js</p>
-            </div>
-        `;
-        return;
-    }
-
-    if (currentItem >= galleryItems.length) {
-        currentChapter++;
-        showChapter();
-        return;
-    }
-
-    const item = galleryItems[currentItem];
-
+    mediaContainer.innerHTML = "";
     showScreen(galleryScreen);
 
-    if (item.type === "video") {
-        mediaContainer.innerHTML = `
-            <video autoplay playsinline controls>
-                <source src="${item.src}" type="video/mp4">
-                Tu navegador no puede reproducir este video.
-            </video>
-        `;
+    if (item.type === "image") {
+        const image = document.createElement("img");
 
-        const video = mediaContainer.querySelector("video");
+        image.src = item.src;
+        image.alt = "Recuerdo de nuestra historia";
+        image.decoding = "async";
+
+        image.onload = () => {
+            if (!isPaused) {
+                timer = setTimeout(nextItem, IMAGE_DURATION);
+            }
+        };
+
+        image.onerror = () => {
+            console.error("No se pudo cargar:", item.src);
+            nextItem();
+        };
+
+        mediaContainer.appendChild(image);
+
+        preloadNextImage();
+
+    } else if (item.type === "video") {
+        const video = document.createElement("video");
+
+        video.src = item.src;
+        video.autoplay = true;
+        video.controls = true;
+        video.playsInline = true;
+        video.volume = VIDEO_VOLUME;
+        video.preload = "auto";
 
         video.addEventListener("ended", nextItem);
-    } else {
-        mediaContainer.innerHTML = `
-            <img src="${item.src}" alt="Recuerdo de Mecatrónica">
-        `;
 
-        if (!isPaused) {
-            slideTimer = setTimeout(nextItem, IMAGE_DURATION);
-        }
+        video.addEventListener("error", () => {
+            console.error("No se pudo reproducir:", item.src);
+            nextItem();
+        });
+
+        mediaContainer.appendChild(video);
+
+        currentVideo = video;
+
+        video.play().catch(error => {
+            console.warn("Reproducción automática bloqueada:", error);
+        });
     }
-
-    updateProgress();
 }
 
+// Siguiente elemento
 function nextItem() {
-    clearTimeout(slideTimer);
-
-    currentItem++;
-    showGalleryItem();
-}
-
-function previousItem() {
-    clearTimeout(slideTimer);
-
-    if (currentItem > 0) {
-        currentItem--;
-        showGalleryItem();
+    if (currentIndex < presentation.length) {
+        currentIndex++;
+        showCurrentItem();
     }
 }
 
+// Elemento anterior
+function previousItem() {
+    if (currentIndex > 0) {
+        currentIndex--;
+        showCurrentItem();
+    }
+}
+
+// Pausar y continuar
 function togglePause() {
     isPaused = !isPaused;
 
-    pauseButton.textContent = isPaused ? "▶" : "II";
-
-    const video = mediaContainer.querySelector("video");
-
-    if (video) {
+    if (currentVideo) {
         if (isPaused) {
-            video.pause();
+            currentVideo.pause();
         } else {
-            video.play();
+            currentVideo.play().catch(() => {});
         }
-    } else if (galleryScreen.classList.contains("active")) {
-        clearTimeout(slideTimer);
+    } else if (isPaused) {
+        clearTimeout(timer);
+    } else {
+        const currentItem = presentation[currentIndex];
 
-        if (!isPaused && galleryItems.length > 0) {
-            slideTimer = setTimeout(nextItem, IMAGE_DURATION);
+        if (chapterScreen.classList.contains("active")) {
+            timer = setTimeout(() => {
+                renderMedia(currentItem);
+            }, CHAPTER_DURATION);
+        } else if (currentItem?.type === "image") {
+            timer = setTimeout(nextItem, IMAGE_DURATION);
         }
     }
+
+    updatePauseIcon();
 }
 
+// Barra de progreso
 function updateProgress() {
-    if (galleryItems.length === 0) {
-        progressBar.style.width = "0%";
-        return;
-    }
-
-    const percentage = ((currentItem + 1) / galleryItems.length) * 100;
-    progressBar.style.width = `${percentage}%`;
+    const progress = (currentIndex / presentation.length) * 100;
+    progressBar.style.width = `${progress}%`;
 }
 
+// Pantalla final
 function showEnding() {
-    clearTimeout(slideTimer);
+    clearTimeout(timer);
+    mediaContainer.innerHTML = "";
+    progressBar.style.width = "100%";
+
+    if (currentVideo) {
+        currentVideo.pause();
+        currentVideo = null;
+    }
+
     showScreen(endingScreen);
 }
 
-startButton.addEventListener("click", startJourney);
+// Reiniciar presentación
+function restartJourney() {
+    currentIndex = 0;
+    showCurrentItem();
+}
+
+// Eventos de botones
+startButton.addEventListener("click", () => {
+    currentIndex = 0;
+    showCurrentItem();
+});
+
 nextButton.addEventListener("click", nextItem);
 previousButton.addEventListener("click", previousItem);
 pauseButton.addEventListener("click", togglePause);
+
+// Controles del teclado
+document.addEventListener("keydown", event => {
+    if (event.key === "ArrowRight") {
+        nextItem();
+    }
+
+    if (event.key === "ArrowLeft") {
+        previousItem();
+    }
+
+    if (event.code === "Space") {
+        event.preventDefault();
+        togglePause();
+    }
+});
+
+// Icono inicial
+updatePauseIcon();
