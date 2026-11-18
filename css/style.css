@@ -1,0 +1,364 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Montserrat:wght@300;400;500;600&display=swap');
+
+:root {
+    --background: #090909;
+    --gold: #c5a46d;
+    --gold-light: #e3c894;
+    --white: #f5f1e9;
+    --muted: #a8a095;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+    background: var(--background);
+    color: var(--white);
+    font-family: 'Montserrat', sans-serif;
+}
+
+#presentation {
+    width: 100%;
+    height: 100%;
+}
+
+.screen {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    background: var(--background);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 1s ease, visibility 1s ease;
+}
+
+.screen.active {
+    opacity: 1;
+    visibility: visible;
+    z-index: 2;
+}
+
+/* PORTADA */
+
+#cover {
+    text-align: center;
+}
+
+.cover-background {
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(
+            ellipse at center,
+            rgba(111, 78, 36, 0.20),
+            transparent 65%
+        ),
+        linear-gradient(135deg, #11100e, #050505 70%);
+    animation: backgroundBreath 9s ease-in-out infinite alternate;
+}
+
+.cover-overlay {
+    position: absolute;
+    inset: 25px;
+    border: 1px solid rgba(197, 164, 109, 0.15);
+    pointer-events: none;
+}
+
+.cover-content {
+    position: relative;
+    z-index: 2;
+    max-width: 900px;
+    padding: 30px;
+    animation: appear 1.8s ease both;
+}
+
+.eyebrow {
+    color: var(--gold);
+    font-size: 12px;
+    letter-spacing: 6px;
+    margin-bottom: 35px;
+}
+
+.gold-line {
+    width: 75px;
+    height: 1px;
+    background: var(--gold);
+    margin: 25px auto;
+}
+
+h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(65px, 11vw, 145px);
+    font-weight: 300;
+    line-height: 0.95;
+    letter-spacing: -3px;
+}
+
+h1 span,
+.ending-content h2 span {
+    color: var(--gold-light);
+    font-style: italic;
+}
+
+.subtitle {
+    margin-top: 25px;
+    font-size: 14px;
+    letter-spacing: 8px;
+    color: var(--muted);
+    text-transform: uppercase;
+}
+
+.intro {
+    margin-top: 55px;
+    color: #bdb5a8;
+    font-size: 13px;
+    letter-spacing: 1px;
+    font-weight: 300;
+}
+
+.start-button {
+    margin-top: 45px;
+    padding: 17px 30px;
+    border: 1px solid var(--gold);
+    background: transparent;
+    color: var(--gold-light);
+    font-family: 'Montserrat', sans-serif;
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: 0.4s ease;
+}
+
+.start-button span {
+    margin-left: 20px;
+    font-size: 17px;
+}
+
+.start-button:hover {
+    background: var(--gold);
+    color: #090909;
+    transform: translateY(-3px);
+}
+
+.footer-cover {
+    margin-top: 85px;
+    font-size: 9px;
+    letter-spacing: 5px;
+    color: #746e64;
+}
+
+.cover-decoration {
+    position: absolute;
+    width: 350px;
+    height: 350px;
+    border: 1px solid rgba(197, 164, 109, 0.06);
+    border-radius: 50%;
+}
+
+.decoration-one {
+    top: -200px;
+    left: -150px;
+}
+
+.decoration-two {
+    bottom: -230px;
+    right: -150px;
+}
+
+/* CAPÍTULOS */
+
+.chapter-content {
+    text-align: center;
+    padding: 30px;
+    animation: chapterAppear 1.5s ease both;
+}
+
+.chapter-number {
+    font-size: 11px;
+    letter-spacing: 6px;
+    color: var(--gold);
+}
+
+.chapter-content h2 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(40px, 7vw, 85px);
+    font-weight: 300;
+    color: var(--white);
+}
+
+/* GALERÍA */
+
+#galleryScreen {
+    background: #050505;
+}
+
+.media-container {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.media-container img,
+.media-container video {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    animation: mediaAppear 1s ease both;
+}
+
+.media-placeholder {
+    color: var(--muted);
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 35px;
+    text-align: center;
+}
+
+.gallery-controls {
+    position: absolute;
+    bottom: 45px;
+    z-index: 5;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.gallery-controls button {
+    width: 48px;
+    height: 48px;
+    border: 1px solid rgba(197, 164, 109, 0.5);
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.6);
+    color: var(--gold-light);
+    font-size: 17px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.gallery-controls button:hover {
+    background: var(--gold);
+    color: #090909;
+}
+
+.gallery-progress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+#progressBar {
+    height: 100%;
+    width: 0%;
+    background: var(--gold);
+}
+
+/* CIERRE */
+
+.ending-content {
+    max-width: 850px;
+    padding: 30px;
+    text-align: center;
+    animation: appear 2s ease both;
+}
+
+.ending-content h2 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(45px, 8vw, 95px);
+    font-weight: 300;
+    line-height: 1.05;
+}
+
+.ending-content > p:not(.eyebrow):not(.ending-signature) {
+    margin-top: 40px;
+    color: var(--muted);
+    font-size: 13px;
+    letter-spacing: 1px;
+    line-height: 2;
+}
+
+.ending-signature {
+    margin-top: 65px;
+    color: var(--gold);
+    font-size: 10px;
+    letter-spacing: 6px;
+}
+
+/* ANIMACIONES */
+
+@keyframes appear {
+    from {
+        opacity: 0;
+        transform: translateY(25px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes chapterAppear {
+    from {
+        opacity: 0;
+        transform: scale(0.96);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes mediaAppear {
+    from {
+        opacity: 0;
+        transform: scale(1.02);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes backgroundBreath {
+    from {
+        transform: scale(1);
+    }
+    to {
+        transform: scale(1.08);
+    }
+}
+
+/* PANTALLAS PEQUEÑAS */
+
+@media (max-width: 600px) {
+    .cover-overlay {
+        inset: 12px;
+    }
+
+    .subtitle {
+        letter-spacing: 4px;
+    }
+
+    .intro {
+        font-size: 11px;
+        line-height: 1.8;
+    }
+
+    .footer-cover {
+        letter-spacing: 3px;
+    }
+}
