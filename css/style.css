@@ -2,11 +2,17 @@
 @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Montserrat:wght@300;400;500;600&display=swap');
 
 :root {
-    --background: #080807;
-    --gold: #c5a46d;
-    --gold-light: #ead5aa;
-    --white: #f5f1e9;
-    --muted: #a8a095;
+    --background: #020817;
+    --gold: #69dfff;
+    --gold-light: #b9f4ff;
+    --white: #f2f8ff;
+    --muted: #91a9c4;
+
+    --blue-dark: #071b3c;
+    --blue: #0c3972;
+    --cyan: #69dfff;
+    --orange: #ff9d22;
+    --yellow: #ffd64a;
 }
 
 * {
@@ -487,14 +493,15 @@ h1 span,
    CAPÍTULOS
 ===================================== */
 
-#chapterScreen {
+#chapterScreen
+ {
     background:
         radial-gradient(
             ellipse at center,
-            rgba(110, 78, 39, 0.17),
-            transparent 60%
+            rgba(20, 92, 160, 0.20),
+            transparent 65%
         ),
-        #080807;
+        #020817;
 }
 
 .chapter-content {
@@ -642,10 +649,10 @@ h1 span,
     background:
         radial-gradient(
             ellipse at center,
-            rgba(130, 91, 43, 0.18),
-            transparent 60%
+            rgba(20, 92, 160, 0.20),
+            transparent 65%
         ),
-        #080807;
+        #020817;
 }
 
 .ending-content {
@@ -920,6 +927,109 @@ h1 span,
     .cover-content,
     .cover-overlay,
     .cover-decoration {
+        opacity: 1;
+    }
+}
+
+/* =====================================================
+   INTRODUCCIÓN ORIGINAL - VELA MECATRÓNICA 11-13
+===================================================== */
+
+#cover {
+    background: #020817;
+}
+
+.cover-background {
+    background: #020817;
+}
+
+/* Video de la vela */
+.cover-video-intro {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    overflow: hidden;
+    background: #020817;
+
+    pointer-events: none;
+
+    opacity: 1;
+    visibility: visible;
+
+    animation: candleVideoFade 1s ease 7.2s forwards;
+}
+
+/* Mantener el formato original del video */
+.cover-video-intro video {
+    display: block;
+
+    width: 100%;
+    height: 100%;
+
+    object-fit: contain;
+    object-position: center;
+
+    background: #020817;
+}
+
+/* El título aparece después de la vela */
+.cover-content {
+    opacity: 0;
+
+    animation: coverReveal 1.2s ease 7.7s forwards;
+}
+
+/* El marco aparece junto con el título */
+.cover-overlay,
+.cover-decoration {
+    opacity: 0;
+
+    animation: coverReveal 1.2s ease 7.7s forwards;
+}
+
+/* Desvanecimiento del video */
+@keyframes candleVideoFade {
+    0% {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    100% {
+        opacity: 0;
+        visibility: hidden;
+    }
+}
+
+/* Adaptación para celulares */
+@media (max-width: 600px) {
+
+    .cover-video-intro {
+        background: #020817;
+    }
+
+    .cover-video-intro video {
+        object-fit: contain;
+    }
+}
+
+/* Accesibilidad */
+@media (prefers-reduced-motion: reduce) {
+
+    .cover-video-intro {
+        animation: none;
+        opacity: 0;
+        visibility: hidden;
+    }
+
+    .cover-content,
+    .cover-overlay,
+    .cover-decoration {
+        animation: none;
         opacity: 1;
     }
 }
